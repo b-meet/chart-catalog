@@ -187,7 +187,7 @@ export const threeDayData = [
 	{ time: "2019-05-06", value: 26.03 },
 	{ time: "2019-05-13", value: 26.05 },
 	{ time: "2019-05-20", value: 26.01 },
-	{ time: "2019-05-24", value: 26.16 },
+	{ time: "2019-05-24", value: 26.23 },
 ];
 
 export const weekData = [
@@ -521,7 +521,7 @@ export const sixMonthData = [
 	{ time: "2017-06-01", value: 26.39 },
 	{ time: "2017-12-01", value: 25.82 },
 	{ time: "2018-06-01", value: 26.58 },
-	{ time: "2018-12-03", value: 25.77 },
+	{ time: "2018-12-03", value: 26.23 },
 ];
 
 export const yearData = [

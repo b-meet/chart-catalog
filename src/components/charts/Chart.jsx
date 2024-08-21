@@ -15,25 +15,26 @@ const Chart = () => {
 	const chartRef = useRef();
 	const seriesRef = useRef();
 	const [selectedRange, setSelectedRange] = useState("day");
+	const [isFullscreen, setIsFullscreen] = useState(false);
+
+	const dataSets = {
+		day: dayData,
+		threeDay: threeDayData,
+		week: weekData,
+		month: monthData,
+		sixMonth: sixMonthData,
+		year: yearData,
+	};
+
+	const colors = {
+		backgroundColor: "white",
+		lineColor: "#2962FF",
+		textColor: "black",
+		areaTopColor: "#2962FF",
+		areaBottomColor: "rgba(41, 98, 255, 0.28)",
+	};
 
 	useEffect(() => {
-		const dataSets = {
-			day: dayData,
-			threeDay: threeDayData,
-			week: weekData,
-			month: monthData,
-			sixMonth: sixMonthData,
-			year: yearData,
-		};
-
-		const colors = {
-			backgroundColor: "white",
-			lineColor: "#2962FF",
-			textColor: "black",
-			areaTopColor: "#2962FF",
-			areaBottomColor: "rgba(41, 98, 255, 0.28)",
-		};
-
 		if (!chartRef.current) {
 			chartRef.current = createChart(chartContainerRef.current, {
 				width: chartContainerRef.current.clientWidth,
@@ -49,45 +50,73 @@ const Chart = () => {
 		seriesRef.current.setData(dataSets[selectedRange]);
 
 		chartRef.current.applyOptions({
-			chart: {
-				backgroundColor: colors.backgroundColor,
-			},
 			xAxis: {
 				color: colors.textColor,
 			},
 			yAxis: {
 				color: colors.textColor,
 			},
-			lineSeries: {
-				color: colors.lineColor,
-			},
 		});
 
 		const resizeObserver = new ResizeObserver(() => {
 			chartRef.current.applyOptions({
 				width: chartContainerRef.current.clientWidth,
+				height: chartContainerRef.current.clientHeight,
 			});
 		});
 
 		resizeObserver.observe(chartContainerRef.current);
 
 		return () => resizeObserver.disconnect();
-	}, [selectedRange]);
+	}, [selectedRange, isFullscreen]);
 
 	const handleRangeChange = (range) => {
 		setSelectedRange(range);
 	};
 
+	const toggleFullscreen = () => {
+		if (isFullscreen) {
+			document.exitFullscreen();
+		} else {
+			chartContainerRef.current.requestFullscreen();
+		}
+		setIsFullscreen(!isFullscreen);
+	};
+
+	useEffect(() => {
+		const handleFullscreenChange = () => {
+			setIsFullscreen(!!document.fullscreenElement);
+		};
+
+		document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+		return () => {
+			document.removeEventListener(
+				"fullscreenchange",
+				handleFullscreenChange
+			);
+		};
+	}, []);
+
 	return (
-		<section className='p-12 pt-9'>
-			<section className='flex justify-between items-center text-[#6F7177] pb-4'>
+		<section className={`p-12 pt-9 ${isFullscreen ? "fullscreen" : ""}`}>
+			<section
+				className={`flex justify-between items-center text-[#6F7177] pb-4 ${
+					isFullscreen ? "fullscreen-controls" : ""
+				}`}
+			>
 				<div className='flex sm:gap-10 gap-3 items-center'>
 					<button
 						title='fullscreen'
-						className='flex sm:gap-2 gap-1 items-center'
+						onClick={toggleFullscreen}
+						className={`flex sm:gap-2 gap-1 items-center ${
+							isFullscreen ? "fullscreen-btn" : ""
+						}`}
 					>
 						<Icons type='fullscreen' />
-						<span className='hidden sm:block'>Fullscreen</span>
+						<span className='hidden sm:block'>
+							{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+						</span>
 					</button>
 					<button
 						title='compare'
@@ -161,7 +190,6 @@ const Chart = () => {
 				</div>
 			</section>
 			<div
-				id='chart'
 				ref={chartContainerRef}
 				style={{ height: "400px", width: "100%" }}
 			/>

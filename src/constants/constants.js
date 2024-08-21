@@ -1,5 +1,5 @@
 export const TABS = {
-	SUMMARY: "summary",
+	SUMMARY: "Summary",
 	CHART: "Chart",
 	STATISTICS: "Statistics",
 	ANALYSIS: "Analysis",
