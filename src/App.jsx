@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Chart from "./components/charts/Chart";
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState(2);
@@ -68,7 +69,7 @@ const App = () => {
 				</div>
 			</section>
 			<hr />
-			<section></section>
+			<Chart />
 		</article>
 	);
 };
