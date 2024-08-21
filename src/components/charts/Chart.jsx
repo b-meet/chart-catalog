@@ -48,7 +48,6 @@ const Chart = () => {
 
 		seriesRef.current.setData(dataSets[selectedRange]);
 
-		// Apply custom colors
 		chartRef.current.applyOptions({
 			chart: {
 				backgroundColor: colors.backgroundColor,
@@ -81,15 +80,21 @@ const Chart = () => {
 
 	return (
 		<section className='p-12 pt-9'>
-			<section className='flex justify-between items-center text-[#6F7177] pb-5'>
-				<div className='flex gap-10 items-center'>
-					<button className='flex gap-2 items-center'>
+			<section className='flex justify-between items-center text-[#6F7177] pb-4'>
+				<div className='flex sm:gap-10 gap-3 items-center'>
+					<button
+						title='fullscreen'
+						className='flex sm:gap-2 gap-1 items-center'
+					>
 						<Icons type='fullscreen' />
-						Fullscreen
+						<span className='hidden sm:block'>Fullscreen</span>
 					</button>
-					<button className='flex gap-2 items-center'>
+					<button
+						title='compare'
+						className='flex sm:gap-2 gap-1 items-center'
+					>
 						<Icons type='addCircle' />
-						Compare
+						<span className='hidden sm:block'>Compare</span>
 					</button>
 				</div>
 				<div>
@@ -158,7 +163,7 @@ const Chart = () => {
 			<div
 				id='chart'
 				ref={chartContainerRef}
-				style={{ height: "450px", width: "100%" }}
+				style={{ height: "400px", width: "100%" }}
 			/>
 		</section>
 	);

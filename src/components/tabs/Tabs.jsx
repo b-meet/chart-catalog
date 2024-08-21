@@ -2,7 +2,7 @@ import { TABS } from "../../constants/constants";
 
 const Tabs = ({ handleTabToggle, activeTab }) => {
 	return (
-		<div className='flex items-center gap-4'>
+		<div className='flex items-center gap-4 max-w-[560px] overflow-auto'>
 			<button
 				onClick={() => handleTabToggle(TABS.SUMMARY)}
 				className={`${
