@@ -9,6 +9,7 @@ import {
 	yearData,
 } from "../../assets/data";
 import Icons from "../global/Icons";
+import Modal from "../global/Modal";
 
 const Chart = () => {
 	const chartContainerRef = useRef();
@@ -16,25 +17,29 @@ const Chart = () => {
 	const seriesRef = useRef();
 	const [selectedRange, setSelectedRange] = useState("day");
 	const [isFullscreen, setIsFullscreen] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const dataSets = {
-		day: dayData,
-		threeDay: threeDayData,
-		week: weekData,
-		month: monthData,
-		sixMonth: sixMonthData,
-		year: yearData,
-	};
-
-	const colors = {
-		backgroundColor: "white",
-		lineColor: "#2962FF",
-		textColor: "black",
-		areaTopColor: "#2962FF",
-		areaBottomColor: "rgba(41, 98, 255, 0.28)",
-	};
+	const openModal = () => setIsModalOpen(true);
+	const closeModal = () => setIsModalOpen(false);
 
 	useEffect(() => {
+		const dataSets = {
+			day: dayData,
+			threeDay: threeDayData,
+			week: weekData,
+			month: monthData,
+			sixMonth: sixMonthData,
+			year: yearData,
+		};
+
+		const colors = {
+			backgroundColor: "white",
+			lineColor: "#2962FF",
+			textColor: "black",
+			areaTopColor: "#2962FF",
+			areaBottomColor: "rgba(41, 98, 255, 0.28)",
+		};
+
 		if (!chartRef.current) {
 			chartRef.current = createChart(chartContainerRef.current, {
 				width: chartContainerRef.current.clientWidth,
@@ -120,6 +125,7 @@ const Chart = () => {
 					</button>
 					<button
 						title='compare'
+						onClick={openModal}
 						className='flex sm:gap-2 gap-1 items-center'
 					>
 						<Icons type='addCircle' />
@@ -189,6 +195,23 @@ const Chart = () => {
 					</button>
 				</div>
 			</section>
+			<Modal isOpen={isModalOpen} onClose={closeModal} title='Compare'>
+				<div className='flex flex-col gap-8 justify-center items-center'>
+					<p>
+						This feature is for the permium user only. Permium users
+						have higher chances of success.{" "}
+						<strong>Get the 3months free trail today</strong>
+					</p>
+					<a
+						href='https://www.linkedin.com/in/b-meet/'
+						target='_blank'
+						className='bg-[#4B40EE] text-white rounded-md py-1 px-6 '
+						onClick={closeModal}
+					>
+						Contact Sales
+					</a>
+				</div>
+			</Modal>
 			<div
 				ref={chartContainerRef}
 				style={{ height: "400px", width: "100%" }}
