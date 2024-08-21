@@ -16,25 +16,53 @@ const Chart = () => {
 	const seriesRef = useRef();
 	const [selectedRange, setSelectedRange] = useState("day");
 
-	const dataSets = {
-		day: dayData,
-		threeDay: threeDayData,
-		week: weekData,
-		month: monthData,
-		sixMonth: sixMonthData,
-		year: yearData,
-	};
-
 	useEffect(() => {
+		const dataSets = {
+			day: dayData,
+			threeDay: threeDayData,
+			week: weekData,
+			month: monthData,
+			sixMonth: sixMonthData,
+			year: yearData,
+		};
+
+		const colors = {
+			backgroundColor: "white",
+			lineColor: "#2962FF",
+			textColor: "black",
+			areaTopColor: "#2962FF",
+			areaBottomColor: "rgba(41, 98, 255, 0.28)",
+		};
+
 		if (!chartRef.current) {
 			chartRef.current = createChart(chartContainerRef.current, {
 				width: chartContainerRef.current.clientWidth,
 				height: chartContainerRef.current.clientHeight,
+				background: colors.backgroundColor,
 			});
-			seriesRef.current = chartRef.current.addLineSeries();
+			seriesRef.current = chartRef.current.addLineSeries({
+				color: colors.lineColor,
+				lineWidth: 2,
+			});
 		}
 
 		seriesRef.current.setData(dataSets[selectedRange]);
+
+		// Apply custom colors
+		chartRef.current.applyOptions({
+			chart: {
+				backgroundColor: colors.backgroundColor,
+			},
+			xAxis: {
+				color: colors.textColor,
+			},
+			yAxis: {
+				color: colors.textColor,
+			},
+			lineSeries: {
+				color: colors.lineColor,
+			},
+		});
 
 		const resizeObserver = new ResizeObserver(() => {
 			chartRef.current.applyOptions({
@@ -45,15 +73,15 @@ const Chart = () => {
 		resizeObserver.observe(chartContainerRef.current);
 
 		return () => resizeObserver.disconnect();
-	}, [selectedRange, dataSets]);
+	}, [selectedRange]);
 
 	const handleRangeChange = (range) => {
 		setSelectedRange(range);
 	};
 
 	return (
-		<section className='p-12 pb-0'>
-			<section className='flex justify-between items-center text-[#6F7177]'>
+		<section className='p-12 pt-9'>
+			<section className='flex justify-between items-center text-[#6F7177] pb-5'>
 				<div className='flex gap-10 items-center'>
 					<button className='flex gap-2 items-center'>
 						<Icons type='fullscreen' />
@@ -130,7 +158,7 @@ const Chart = () => {
 			<div
 				id='chart'
 				ref={chartContainerRef}
-				style={{ height: "400px", width: "100%" }}
+				style={{ height: "450px", width: "100%" }}
 			/>
 		</section>
 	);
