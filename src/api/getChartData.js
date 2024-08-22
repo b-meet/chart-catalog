@@ -1,12 +1,11 @@
 import axios from "axios";
 import { convertData } from "../util/dataConversion";
 
-export const getDailyData = async (setMetaData, setChartdata) => {
+export const getDailyData = async (setChartdata) => {
 	try {
 		const res = await axios.get(
 			`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=${"demo"}`
 		);
-		setMetaData(res.data["Meta Data"]);
 		const data = convertData(res?.data["Time Series (Daily)"]);
 		setChartdata(data);
 	} catch (error) {
@@ -14,12 +13,11 @@ export const getDailyData = async (setMetaData, setChartdata) => {
 	}
 };
 
-export const getWeeklyData = async (setMetaData, setChartdata) => {
+export const getWeeklyData = async (setChartdata) => {
 	try {
 		const res = await axios.get(
 			`https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=IBM&apikey=${"demo"}`
 		);
-		setMetaData(res.data["Meta Data"]);
 		const data = convertData(res?.data["Weekly Time Series"]);
 		setChartdata(data);
 	} catch (error) {
@@ -27,12 +25,11 @@ export const getWeeklyData = async (setMetaData, setChartdata) => {
 	}
 };
 
-export const getMonthlyData = async (setMetaData, setChartdata) => {
+export const getMonthlyData = async (setChartdata) => {
 	try {
 		const res = await axios.get(
 			`https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=${"demo"}`
 		);
-		setMetaData(res.data["Meta Data"]);
 		const data = convertData(res?.data["Monthly Time Series"]);
 		setChartdata(data);
 	} catch (error) {
@@ -48,7 +45,6 @@ export const getMonthlyData = async (setMetaData, setChartdata) => {
 
 // export const getTimeSeriesData = async (
 // 	dataRange,
-// 	setMetaData,
 // 	setChartdata
 // ) => {
 // 	try {
@@ -71,7 +67,6 @@ export const getMonthlyData = async (setMetaData, setChartdata) => {
 // 		const timeSeriesData = res.data[responseKey[dataRange]];
 // 		const data = convertData(timeSeriesData);
 // 		setChartdata(data);
-// 		setMetaData(res.data["Meta Data"]);
 // 	} catch (error) {
 // 		console.log(error);
 // 	}

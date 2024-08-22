@@ -7,7 +7,6 @@ import { TABS } from "./constants/constants";
 const App = () => {
 	const [activeTab, setActiveTab] = useState(TABS.CHART);
 	const [hoveredPrice, setHoveredPrice] = useState(null);
-	const [metaData, setMetaData] = useState(null);
 	const [chartdata, setChartdata] = useState([]);
 	const [percentageChange, setPercentageChange] = useState(0);
 	const [ltp, setLtp] = useState(0);
@@ -29,8 +28,6 @@ const App = () => {
 			setPercentageChange(change.toFixed(2));
 		}
 	}, [hoveredPrice, ltp]);
-
-	console.log(percentageChange < 0, "ddd");
 
 	return (
 		<article className='text-[18px]'>
@@ -56,15 +53,15 @@ const App = () => {
 				<Tabs handleTabToggle={handleTabToggle} activeTab={activeTab} />
 			</section>
 			<hr />
-			{activeTab === TABS.CHART ? (
+			{activeTab === TABS.CHART && (
 				<Chart
 					setHoveredPrice={setHoveredPrice}
-					setMetaData={setMetaData}
 					chartdata={chartdata}
 					setChartdata={setChartdata}
 					ltp={ltp}
 				/>
-			) : (
+			)}
+			{![TABS.CHART].includes(activeTab) && (
 				<WorkInProgress section={activeTab} />
 			)}
 		</article>

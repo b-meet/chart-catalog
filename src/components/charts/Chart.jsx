@@ -9,16 +9,11 @@ import {
 } from "../../api/getChartData";
 import RangeButton from "./RangeBtn";
 
-const Chart = ({
-	chartdata,
-	setHoveredPrice,
-	setMetaData,
-	setChartdata,
-	ltp,
-}) => {
+const Chart = ({ chartdata, setHoveredPrice, setChartdata, ltp }) => {
 	const chartContainerRef = useRef();
 	const chartRef = useRef();
 	const seriesRef = useRef();
+	const chartWrapperRef = useRef();
 	const [selectedRange, setSelectedRange] = useState("day");
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,13 +23,13 @@ const Chart = ({
 
 	useEffect(() => {
 		if (selectedRange === "day") {
-			getDailyData(setMetaData, setChartdata);
+			getDailyData(setChartdata);
 		} else if (selectedRange === "week") {
-			getWeeklyData(setMetaData, setChartdata);
+			getWeeklyData(setChartdata);
 		} else {
-			getMonthlyData(setMetaData, setChartdata);
+			getMonthlyData(setChartdata);
 		}
-	}, [selectedRange, setChartdata, setMetaData]);
+	}, [selectedRange, setChartdata]);
 
 	useEffect(() => {
 		if (!chartdata) return;
@@ -58,7 +53,6 @@ const Chart = ({
 		}
 
 		seriesRef.current.setData(chartdata);
-
 		chartRef.current.subscribeCrosshairMove((param) => {
 			if (!param.time || !param.seriesData) {
 				setHoveredPrice(ltp);
@@ -69,14 +63,12 @@ const Chart = ({
 				setHoveredPrice(price.value);
 			}
 		});
-
 		const resizeObserver = new ResizeObserver(() => {
 			chartRef.current.applyOptions({
 				width: chartContainerRef.current.clientWidth,
 				height: chartContainerRef.current.clientHeight,
 			});
 		});
-
 		resizeObserver.observe(chartContainerRef.current);
 
 		return () => {
@@ -89,7 +81,7 @@ const Chart = ({
 		if (isFullscreen) {
 			document.exitFullscreen();
 		} else {
-			chartContainerRef.current.requestFullscreen();
+			chartWrapperRef.current.requestFullscreen();
 		}
 	};
 
@@ -108,11 +100,12 @@ const Chart = ({
 	}, []);
 
 	return (
-		<section className={`p-12 pt-9 ${isFullscreen ? "fullscreen" : ""}`}>
+		<section
+			ref={chartWrapperRef}
+			className={`p-12 pt-9 ${isFullscreen ? "p-0" : ""}`}
+		>
 			<section
-				className={`flex justify-between items-center text-[#6F7177] pb-4 ${
-					isFullscreen ? "fullscreen-controls" : ""
-				}`}
+				className={`flex justify-between items-center text-[#6F7177] pb-4`}
 			>
 				<div className='flex sm:gap-10 gap-3 items-center'>
 					<button
@@ -176,7 +169,11 @@ const Chart = ({
 			</Modal>
 			<div
 				ref={chartContainerRef}
-				style={{ height: "400px", width: "100%" }}
+				style={
+					isFullscreen
+						? { height: "90vh" }
+						: { height: "400px", width: "100%" }
+				}
 			/>
 		</section>
 	);
