@@ -6,7 +6,6 @@ export const getDailyData = async (setMetaData, setChartdata) => {
 		const res = await axios.get(
 			`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=${"demo"}`
 		);
-		console.log(res.data["Time Series (Daily)"], "res");
 		setMetaData(res.data["Meta Data"]);
 		const data = convertData(res?.data["Time Series (Daily)"]);
 		setChartdata(data);
@@ -20,7 +19,6 @@ export const getWeeklyData = async (setMetaData, setChartdata) => {
 		const res = await axios.get(
 			`https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=IBM&apikey=${"demo"}`
 		);
-		console.log(res.data["Weekly Time Series"], "res");
 		setMetaData(res.data["Meta Data"]);
 		const data = convertData(res?.data["Weekly Time Series"]);
 		setChartdata(data);
@@ -34,7 +32,6 @@ export const getMonthlyData = async (setMetaData, setChartdata) => {
 		const res = await axios.get(
 			`https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=${"demo"}`
 		);
-		console.log(res.data["Monthly Time Series"], "res");
 		setMetaData(res.data["Meta Data"]);
 		const data = convertData(res?.data["Monthly Time Series"]);
 		setChartdata(data);

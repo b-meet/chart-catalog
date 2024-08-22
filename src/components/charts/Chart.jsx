@@ -7,16 +7,21 @@ import {
 	getMonthlyData,
 	getWeeklyData,
 } from "../../api/getChartData";
+import RangeButton from "./RangeBtn";
 
-const Chart = () => {
+const Chart = ({
+	chartdata,
+	setHoveredPrice,
+	setMetaData,
+	setChartdata,
+	ltp,
+}) => {
 	const chartContainerRef = useRef();
 	const chartRef = useRef();
 	const seriesRef = useRef();
 	const [selectedRange, setSelectedRange] = useState("day");
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [metaData, setMetaData] = useState(null);
-	const [chartdata, setChartdata] = useState(null);
 
 	const openModal = () => setIsModalOpen(true);
 	const closeModal = () => setIsModalOpen(false);
@@ -29,25 +34,15 @@ const Chart = () => {
 		} else {
 			getMonthlyData(setMetaData, setChartdata);
 		}
-	}, [selectedRange]);
-
-	console.log(metaData, chartdata, "pata");
+	}, [selectedRange, setChartdata, setMetaData]);
 
 	useEffect(() => {
 		if (!chartdata) return;
-
-		const dataSets = {
-			day: chartdata,
-			week: chartdata,
-			month: chartdata,
-		};
 
 		const colors = {
 			backgroundColor: "white",
 			lineColor: "#2962FF",
 			textColor: "black",
-			areaTopColor: "#2962FF",
-			areaBottomColor: "rgba(41, 98, 255, 0.28)",
 		};
 
 		if (!chartRef.current) {
@@ -62,15 +57,17 @@ const Chart = () => {
 			});
 		}
 
-		seriesRef.current.setData(dataSets[selectedRange]);
+		seriesRef.current.setData(chartdata);
 
-		chartRef.current.applyOptions({
-			xAxis: {
-				color: colors.textColor,
-			},
-			yAxis: {
-				color: colors.textColor,
-			},
+		chartRef.current.subscribeCrosshairMove((param) => {
+			if (!param.time || !param.seriesData) {
+				setHoveredPrice(ltp);
+				return;
+			}
+			const price = param.seriesData.get(seriesRef.current);
+			if (price) {
+				setHoveredPrice(price.value);
+			}
 		});
 
 		const resizeObserver = new ResizeObserver(() => {
@@ -82,12 +79,11 @@ const Chart = () => {
 
 		resizeObserver.observe(chartContainerRef.current);
 
-		return () => resizeObserver.disconnect();
-	}, [selectedRange, isFullscreen, chartdata]);
-
-	const handleRangeChange = (range) => {
-		setSelectedRange(range);
-	};
+		return () => {
+			chartRef.current.unsubscribeCrosshairMove();
+			resizeObserver.disconnect();
+		};
+	}, [chartdata, ltp, setHoveredPrice]);
 
 	const toggleFullscreen = () => {
 		if (isFullscreen) {
@@ -95,7 +91,6 @@ const Chart = () => {
 		} else {
 			chartContainerRef.current.requestFullscreen();
 		}
-		setIsFullscreen(!isFullscreen);
 	};
 
 	useEffect(() => {
@@ -104,7 +99,6 @@ const Chart = () => {
 		};
 
 		document.addEventListener("fullscreenchange", handleFullscreenChange);
-
 		return () => {
 			document.removeEventListener(
 				"fullscreenchange",
@@ -143,49 +137,37 @@ const Chart = () => {
 					</button>
 				</div>
 				<div>
-					<button
-						onClick={() => handleRangeChange("day")}
-						className={`${
-							selectedRange === "day"
-								? "bg-[#4B40EE] rounded-md text-white"
-								: ""
-						} px-3 py-1 text-base`}
-					>
-						1d
-					</button>
-					<button
-						onClick={() => handleRangeChange("week")}
-						className={`${
-							selectedRange === "week"
-								? "bg-[#4B40EE] rounded-md text-white"
-								: ""
-						} px-3 py-1 text-base`}
-					>
-						1w
-					</button>
-					<button
-						onClick={() => handleRangeChange("month")}
-						className={`${
-							selectedRange === "month"
-								? "bg-[#4B40EE] rounded-md text-white"
-								: ""
-						} px-3 py-1 text-base`}
-					>
-						1m
-					</button>
+					<RangeButton
+						range='day'
+						label='1d'
+						selectedRange={selectedRange}
+						setSelectedRange={setSelectedRange}
+					/>
+					<RangeButton
+						range='week'
+						label='1w'
+						selectedRange={selectedRange}
+						setSelectedRange={setSelectedRange}
+					/>
+					<RangeButton
+						range='month'
+						label='1m'
+						selectedRange={selectedRange}
+						setSelectedRange={setSelectedRange}
+					/>
 				</div>
 			</section>
 			<Modal isOpen={isModalOpen} onClose={closeModal} title='Compare'>
 				<div className='flex flex-col gap-8 justify-center items-center'>
 					<p>
-						This feature is for the permium user only. Permium users
+						This feature is for premium users only. Premium users
 						have higher chances of success.{" "}
-						<strong>Get the 3months free trail today</strong>
+						<strong>Get the 3-month free trial today</strong>
 					</p>
 					<a
 						href='https://www.linkedin.com/in/b-meet/'
 						target='_blank'
-						className='bg-[#4B40EE] text-white rounded-md py-1 px-6 '
+						className='bg-[#4B40EE] text-white rounded-md py-1 px-6'
 						onClick={closeModal}
 					>
 						Contact Sales
