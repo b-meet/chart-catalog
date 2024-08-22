@@ -13,6 +13,7 @@ const Chart = ({ chartdata, setHoveredPrice, setChartdata, ltp }) => {
 	const chartContainerRef = useRef();
 	const chartRef = useRef();
 	const seriesRef = useRef();
+	const volumeSeriesRef = useRef();
 	const chartWrapperRef = useRef();
 	const [selectedRange, setSelectedRange] = useState("day");
 	const [isFullscreen, setIsFullscreen] = useState(false);
@@ -37,6 +38,7 @@ const Chart = ({ chartdata, setHoveredPrice, setChartdata, ltp }) => {
 		const colors = {
 			backgroundColor: "white",
 			lineColor: "#2962FF",
+			volumeColor: "#E8E7FF99",
 			textColor: "black",
 		};
 
@@ -46,13 +48,40 @@ const Chart = ({ chartdata, setHoveredPrice, setChartdata, ltp }) => {
 				height: chartContainerRef.current.clientHeight,
 				background: colors.backgroundColor,
 			});
+
+			volumeSeriesRef.current = chartRef.current.addHistogramSeries({
+				color: colors.volumeColor,
+				priceFormat: {
+					type: "volume",
+				},
+				priceScaleId: "",
+				scaleMargins: {
+					top: 0.8,
+					bottom: -0.6,
+				},
+			});
+
 			seriesRef.current = chartRef.current.addLineSeries({
 				color: colors.lineColor,
 				lineWidth: 2,
+				zIndex: 999,
 			});
 		}
 
-		seriesRef.current.setData(chartdata);
+		seriesRef.current.setData(
+			chartdata.map((item) => ({
+				time: item.time,
+				value: item.value,
+			}))
+		);
+
+		volumeSeriesRef.current.setData(
+			chartdata.map((item) => ({
+				time: item.time,
+				value: item.volume,
+			}))
+		);
+
 		chartRef.current.subscribeCrosshairMove((param) => {
 			if (!param.time || !param.seriesData) {
 				setHoveredPrice(ltp);
@@ -63,6 +92,7 @@ const Chart = ({ chartdata, setHoveredPrice, setChartdata, ltp }) => {
 				setHoveredPrice(price.value);
 			}
 		});
+
 		const resizeObserver = new ResizeObserver(() => {
 			chartRef.current.applyOptions({
 				width: chartContainerRef.current.clientWidth,
