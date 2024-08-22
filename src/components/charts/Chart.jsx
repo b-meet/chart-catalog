@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
-import {
-	dayData,
-	monthData,
-	sixMonthData,
-	threeDayData,
-	weekData,
-	yearData,
-} from "../../assets/data";
 import Icons from "../global/Icons";
 import Modal from "../global/Modal";
+import {
+	getDailyData,
+	getMonthlyData,
+	getWeeklyData,
+} from "../../api/getChartData";
 
 const Chart = () => {
 	const chartContainerRef = useRef();
@@ -18,18 +15,31 @@ const Chart = () => {
 	const [selectedRange, setSelectedRange] = useState("day");
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [metaData, setMetaData] = useState(null);
+	const [chartdata, setChartdata] = useState(null);
 
 	const openModal = () => setIsModalOpen(true);
 	const closeModal = () => setIsModalOpen(false);
 
 	useEffect(() => {
+		if (selectedRange === "day") {
+			getDailyData(setMetaData, setChartdata);
+		} else if (selectedRange === "week") {
+			getWeeklyData(setMetaData, setChartdata);
+		} else {
+			getMonthlyData(setMetaData, setChartdata);
+		}
+	}, [selectedRange]);
+
+	console.log(metaData, chartdata, "pata");
+
+	useEffect(() => {
+		if (!chartdata) return;
+
 		const dataSets = {
-			day: dayData,
-			threeDay: threeDayData,
-			week: weekData,
-			month: monthData,
-			sixMonth: sixMonthData,
-			year: yearData,
+			day: chartdata,
+			week: chartdata,
+			month: chartdata,
 		};
 
 		const colors = {
@@ -73,7 +83,7 @@ const Chart = () => {
 		resizeObserver.observe(chartContainerRef.current);
 
 		return () => resizeObserver.disconnect();
-	}, [selectedRange, isFullscreen]);
+	}, [selectedRange, isFullscreen, chartdata]);
 
 	const handleRangeChange = (range) => {
 		setSelectedRange(range);
@@ -144,16 +154,6 @@ const Chart = () => {
 						1d
 					</button>
 					<button
-						onClick={() => handleRangeChange("threeDay")}
-						className={`${
-							selectedRange === "threeDay"
-								? "bg-[#4B40EE] rounded-md text-white"
-								: ""
-						} px-3 py-1 text-base`}
-					>
-						3d
-					</button>
-					<button
 						onClick={() => handleRangeChange("week")}
 						className={`${
 							selectedRange === "week"
@@ -172,26 +172,6 @@ const Chart = () => {
 						} px-3 py-1 text-base`}
 					>
 						1m
-					</button>
-					<button
-						onClick={() => handleRangeChange("sixMonth")}
-						className={`${
-							selectedRange === "sixMonth"
-								? "bg-[#4B40EE] rounded-md text-white"
-								: ""
-						} px-3 py-1 text-base`}
-					>
-						6m
-					</button>
-					<button
-						onClick={() => handleRangeChange("year")}
-						className={`${
-							selectedRange === "year"
-								? "bg-[#4B40EE] rounded-md text-white"
-								: ""
-						} px-3 py-1 text-base`}
-					>
-						1y
 					</button>
 				</div>
 			</section>

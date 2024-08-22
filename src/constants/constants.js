@@ -5,3 +5,5 @@ export const TABS = {
 	ANALYSIS: "Analysis",
 	SETTINGS: "Settings",
 };
+
+export const API_KEY = "demo";
